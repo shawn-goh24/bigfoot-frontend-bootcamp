@@ -33,23 +33,18 @@ export default function Home() {
 
   useEffect(() => {
     const year = searchParams.get("year");
-    if (year) {
-      const getData = async () => {
-        const response = await fetch(`${BACKEND_URL}/sightings?year=${year}`);
-        const jsonData = await response.json();
-        setDatas(jsonData);
-      };
+    const page = searchParams.get("page");
+    const getData = async () => {
+      const response = await fetch(
+        year !== null
+          ? `${BACKEND_URL}/sightings?year=${year}&page=${page}`
+          : `${BACKEND_URL}/sightings`
+      );
+      const jsonData = await response.json();
+      setDatas(jsonData);
+    };
 
-      getData();
-    } else {
-      const getData = async () => {
-        const response = await fetch(`${BACKEND_URL}/sightings`);
-        const jsonData = await response.json();
-        setDatas(jsonData);
-      };
-
-      getData();
-    }
+    getData();
   }, [searchParams]);
 
   const createData = (index, county, year, season, month) => {
@@ -60,13 +55,18 @@ export default function Home() {
   if (datas.length !== 0) {
     datas.forEach((data, i) => {
       tableRows.push(
-        createData(i, data.COUNTY, data.YEAR, data.SEASON, data.MONTH)
+        createData(data.INDEX, data.COUNTY, data.YEAR, data.SEASON, data.MONTH)
       );
     });
   }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    if (filterYear !== "") {
+      setSearchParams({ filter: "year", year: filterYear, page: newPage });
+    } else {
+      setSearchParams({ page: newPage });
+    }
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -77,13 +77,17 @@ export default function Home() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setSearchParams({ year: filterYear });
+    if (filterYear !== "") {
+      setSearchParams({ filter: "year", year: filterYear, page: page });
+    } else {
+      setSearchParams({});
+    }
   };
 
   return (
     <header className="App-header">
       <h1>Home page</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ paddingBottom: "5px" }}>
         <FormControl>
           <InputLabel sx={{ color: "white" }}>Filter year</InputLabel>
           <Input
@@ -125,6 +129,7 @@ export default function Home() {
                           <TableCell key={column.id} align={column.align}>
                             {column.id === "county" ? (
                               <Link to={`/sightings/${row["index"]}`}>
+                                {/* Link does not go to correct sight after filtering */}
                                 {value}
                               </Link>
                             ) : (
