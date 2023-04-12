@@ -129,7 +129,7 @@ export default function Home() {
                           <TableCell key={column.id} align={column.align}>
                             {column.id === "county" ? (
                               <Link to={`/sightings/${row["index"]}`}>
-                                {/* Link does not go to correct sight after filtering */}
+                                {/* Link does not go to correct sight after filteringggg */}
                                 {value}
                               </Link>
                             ) : (
