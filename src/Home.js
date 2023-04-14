@@ -10,18 +10,23 @@ import {
   FormControl,
   Input,
   InputLabel,
+  Button,
 } from "@mui/material";
 
 import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { BACKEND_URL } from "./constants";
 
 const tableColumns = [
   { id: "index", label: "Index" },
-  { id: "county", label: "County", minWidth: "100px" },
-  { id: "year", label: "Year", minWidth: "100px" },
-  { id: "season", label: "Season" },
-  { id: "month", label: "Month" },
+  { id: "date", label: "Date" },
+  {
+    id: "location_description",
+    label: "Location Description",
+    minWidth: "100px",
+  },
+  { id: "city", label: "City" },
+  { id: "country", label: "Country" },
 ];
 
 export default function Home() {
@@ -30,6 +35,8 @@ export default function Home() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterYear, setFilterYear] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const year = searchParams.get("year");
@@ -41,21 +48,28 @@ export default function Home() {
           : `${BACKEND_URL}/sightings`
       );
       const jsonData = await response.json();
+      console.log(jsonData);
       setDatas(jsonData);
     };
 
     getData();
   }, [searchParams]);
 
-  const createData = (index, county, year, season, month) => {
-    return { index, county, year, season, month };
+  const createData = (index, date, location_description, city, country) => {
+    return { index, date, location_description, city, country };
   };
 
   const tableRows = [];
   if (datas.length !== 0) {
     datas.forEach((data, i) => {
       tableRows.push(
-        createData(data.INDEX, data.COUNTY, data.YEAR, data.SEASON, data.MONTH)
+        createData(
+          data.id,
+          data.date,
+          data.location_description,
+          data.city,
+          data.country
+        )
       );
     });
   }
@@ -84,10 +98,22 @@ export default function Home() {
     }
   };
 
+  const tableValues = (text, row, value) => {
+    if (text === "date") {
+      return new Date(value).toLocaleDateString();
+    } else {
+      return value;
+    }
+  };
+
+  const moveToForm = () => {
+    navigate("/sightings/new");
+  };
+
   return (
     <header className="App-header">
       <h1>Home page</h1>
-      <form onSubmit={handleSubmit} style={{ paddingBottom: "5px" }}>
+      {/* <form onSubmit={handleSubmit} style={{ paddingBottom: "5px" }}>
         <FormControl>
           <InputLabel sx={{ color: "white" }}>Filter year</InputLabel>
           <Input
@@ -95,7 +121,7 @@ export default function Home() {
             sx={{ color: "white" }}
           />
         </FormControl>
-      </form>
+      </form> */}
       <Paper sx={{ width: "70%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
@@ -127,13 +153,12 @@ export default function Home() {
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.id === "county" ? (
+                            {column.id === "location_description" ? (
                               <Link to={`/sightings/${row["index"]}`}>
-                                {/* Link does not go to correct sight after filteringggg */}
                                 {value}
                               </Link>
                             ) : (
-                              value
+                              tableValues(column.id, row, value)
                             )}
                           </TableCell>
                         );
@@ -154,6 +179,10 @@ export default function Home() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <br />
+      <Button onClick={() => navigate("/sightings/new")}>
+        Add new sighting here
+      </Button>
     </header>
   );
 }
