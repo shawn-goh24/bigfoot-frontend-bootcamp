@@ -1,8 +1,9 @@
-import { Box, Button, Container, IconButton } from "@mui/material";
+import { Button, Container, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BACKEND_URL } from "./constants";
 import EditIcon from "@mui/icons-material/Edit";
+import Comments from "./components/Comments";
 
 export default function Sightings() {
   const { sightingIndex } = useParams();
@@ -37,6 +38,7 @@ export default function Sightings() {
         <p style={{ fontSize: "18px" }}>{sight.notes}</p>
       </Container>
       <Button onClick={() => navigate("/sightings")}>Back to homepage</Button>
+      <Comments />
     </header>
   );
 }

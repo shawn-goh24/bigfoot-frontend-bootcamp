@@ -113,15 +113,6 @@ export default function Home() {
   return (
     <header className="App-header">
       <h1>Home page</h1>
-      {/* <form onSubmit={handleSubmit} style={{ paddingBottom: "5px" }}>
-        <FormControl>
-          <InputLabel sx={{ color: "white" }}>Filter year</InputLabel>
-          <Input
-            onChange={(e) => setFilterYear(e.target.value)}
-            sx={{ color: "white" }}
-          />
-        </FormControl>
-      </form> */}
       <Paper sx={{ width: "70%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
